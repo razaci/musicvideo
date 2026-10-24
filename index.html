@@ -13,7 +13,7 @@
 </head>
 <body>
 <nav id="returnBar" class="return-bar hidden" aria-label="Player navigation"><button id="backSongs" type="button">← Back to songs</button><span id="returnTitle"></span><button id="exitView" class="hidden" type="button">Exit fullscreen</button></nav>
-<header><div><div class="kicker">Brian Chapman · Illustrated stories in sound</div><h1>Music Cinema</h1><p>Choose a song. Let the story unfold.</p></div><a href="https://github.com/razaci/musicvideo1/" target="_blank" rel="noopener">View collection ↗</a></header>
+<header><div><div class="kicker">Brian Chapman · Illustrated stories in sound</div><h1>Music Cinema</h1><p>Choose a song. Let the story unfold.</p></div><a href="https://github.com/razaci/musicvideo/" target="_blank" rel="noopener">View collection ↗</a></header>
 <main class="layout">
 <aside id="library" class="library" tabindex="-1" aria-label="Music video library">
 <div class="library-top"><h2>Your collection</h2><span class="count" id="count"></span></div>
@@ -31,19 +31,19 @@
 </main>
 <script>
 'use strict';
-const OWNER='razaci', REPO='musicvideo1', BRANCH='main';
+const OWNER='razaci', REPO='musicvideo', BRANCH='main';
 const API=`https://api.github.com/repos/${OWNER}/${REPO}`;
 const PAGES=`https://${OWNER}.github.io/${REPO}/`;
-const CACHE='music-cinema:razaci/musicvideo1:v1';
-const SEED=[{path:'index.html',size:12011370}];
+const CACHE='music-cinema:razaci/musicvideo:v1';
+const SEED=[];
 const $=id=>document.getElementById(id);
 let videos=[],selected=null,busy=false,frame=null;
 const welcome=$('welcome').cloneNode(true);
 function exitExpanded(){document.body.classList.remove('expanded');$('exitView').classList.add('hidden');$('full').textContent='Fullscreen';}
 function backToSongs(){exitExpanded();$('screen').replaceChildren(welcome.cloneNode(true));frame=null;selected=null;document.body.classList.remove('watching');$('returnBar').classList.add('hidden');$('nowTitle').textContent='Choose your music video';$('open').classList.add('hidden');try{history.replaceState(null,'',location.pathname+location.search);}catch{}render();updateControls();$('library').scrollIntoView({block:'start'});$('library').focus({preventScroll:true});}
 $('backSongs').onclick=backToSongs;$('exitView').onclick=exitExpanded;
-function eligible(path){return /\.html?$/i.test(path)&&path.toLowerCase()!=='cinema.html'&&!path.split('/').some(p=>p.startsWith('.'));}
-function titleFor(path){if(path===SEED[0].path)return "I'm Such a Bad Person";let parts=path.split('/'),name=parts.pop().replace(/\.html?$/i,'');if(/^index$/i.test(name)&&parts.length)name=parts.pop();return name.replace(/[_-]+/g,' ').trim()||'Untitled video';}
+function eligible(path){return /\.html?$/i.test(path)&&!['index.html','cinema.html'].includes(path.toLowerCase())&&!path.split('/').some(p=>p.startsWith('.'));}
+function titleFor(path){let parts=path.split('/'),name=parts.pop().replace(/\.html?$/i,'');if(/^index$/i.test(name)&&parts.length)name=parts.pop();return name.replace(/[_-]+/g,' ').trim()||'Untitled video';}
 function urlFor(path){return PAGES+path.split('/').map(encodeURIComponent).join('/');}
 function safeEntries(entries){return entries.filter(v=>v&&typeof v.path==='string'&&eligible(v.path)&&!v.path.split('/').some(p=>p==='..'||p===''));}
 function setVideos(entries){videos=safeEntries(entries).sort((a,b)=>titleFor(a.path).localeCompare(titleFor(b.path),undefined,{numeric:true}));render();updateControls();}
@@ -63,3 +63,4 @@ const requested=new URLSearchParams(location.hash.slice(1)).get('video');if(requ
 refresh();setInterval(()=>{if(!document.hidden)refresh();},300000);
 </script>
 </body></html>
+
